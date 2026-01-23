@@ -1,0 +1,25 @@
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.userosscache
+*.suo
+
+# VS Code
+.vscode/
+
+# Rider
+.idea/
+
+# Environment variables (contiene password!)
+.env
+*.env
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

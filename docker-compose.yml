@@ -1,0 +1,50 @@
+services:
+  # ---- DATABASE ----
+  mysql:
+    image: mysql:8.0
+    container_name: corsosharp-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: tua_password
+      MYSQL_DATABASE: corsosharp
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306"  # 3307 esterno -> 3306 interno (evita conflitto con MySQL locale)
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---- BACKEND .NET 9 ----
+  api:
+    image: mcr.microsoft.com/dotnet/sdk:9.0
+    container_name: corsosharp-api
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=corsosharp;User=root;Password=tua_password;
+    command: dotnet watch run --urls=http://0.0.0.0:5188
+    ports:
+      - "5188:5188"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # ---- FRONTEND ANGULAR ----
+  frontend:
+    image: node:20-alpine
+    container_name: corsosharp-frontend
+    working_dir: /app
+    volumes:
+      - "../../frontend angular_scharp/frontend_forsharp:/app"
+    command: sh -c "npm install && npm start -- --host 0.0.0.0"
+    ports:
+      - "4200:4200"
+    depends_on:
+      - api
+
+volumes:
+  mysql_data:
