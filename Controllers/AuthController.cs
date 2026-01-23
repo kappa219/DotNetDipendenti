@@ -36,7 +36,7 @@ public class AuthController : ControllerBase
         return Ok("Logout effettuato con successo");
     }
 
-    // DEBUG: Mostra i claims del token
+    // DEBUG: qui ho fatto i cleims  informazioni salvate nel token
     [Authorize]
     [HttpGet("me")]
     public ActionResult GetCurrentUser()

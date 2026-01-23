@@ -41,7 +41,7 @@ public class UsersController : ControllerBase
 
     // POST /api/users
     // Equivalente a @PostMapping
-    [Authorize(Roles = "Admin")] // Solo Admin può creare utenti
+    //[Authorize(Roles = "Admin")] // Solo Admin può creare utenti
     [HttpPost]
     public async Task<ActionResult<UserResponseDto>> Create([FromBody] CreateUserDto dto)
     {

@@ -4,10 +4,11 @@ services:
     image: mysql:8.0
     container_name: corsosharp-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: tua_password
-      MYSQL_DATABASE: corsosharp
+      MYSQL_ROOT_PASSWORD: ihfdsojfhsdfh1234
+      MYSQL_DATABASE: corsosharp-docker
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./docker/init:/docker-entrypoint-initdb.d
     ports:
       - "3307:3306"  # 3307 esterno -> 3306 interno (evita conflitto con MySQL locale)
     healthcheck:
@@ -25,7 +26,7 @@ services:
       - .:/app
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=corsosharp;User=root;Password=tua_password;
+      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=corsosharp-docker;User=root;Password=ihfdsojfhsdfh1234;
     command: dotnet watch run --urls=http://0.0.0.0:5188
     ports:
       - "5188:5188"
