@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace corsosharp.Models;
 
-[Table("users")]  // Nome tabella nel DB (come @Table in Java)
+[Table("users")] 
 public class Users
 {
     [Key]  // Chiave primaria (come @Id in Java)

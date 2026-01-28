@@ -15,6 +15,12 @@ namespace corsosharp.Data
         // T (Users) è il modello/entità che mappa le colonne
         public DbSet<Users> Users { get; set; }
 
+        public DbSet<TipologiaLavoro> TipologiaLavoro { get; set; }
+
+        public DbSet<AnagrafiaDipendente> AnagrafiaDipendente { get; set; }
+
+        public DbSet<GiornataLavorativa> GiornateLavorative { get; set; }
+
         // Aggiungi altri DbSet quando crei i model:
         // public DbSet<Product> Products { get; set; }
         // public DbSet<Order> Orders { get; set; }

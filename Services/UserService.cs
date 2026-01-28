@@ -24,11 +24,11 @@ public class UserService : IUserService
     {
         var users = await _context.Users.ToListAsync();
 
-        // Mappa da Entity a DTO (non restituiamo la password!)
-        return users.Select(u => MapToDto(u));
+        //non restituisco la password 
+        return users.Select(user => MapToDto(user)).OrderByDescending(u => u.CreatedAt);
     }
 
-    // GET BY ID - equivalente a findById()
+    // GET BY ID  
     public async Task<UserResponseDto?> GetByIdAsync(Guid id)
     {
         var user = await _context.Users.FindAsync(id);

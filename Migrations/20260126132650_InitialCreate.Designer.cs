@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using corsosharp.Data;
 
@@ -11,9 +12,11 @@ using corsosharp.Data;
 namespace corsosharp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260126132650_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,47 +59,7 @@ namespace corsosharp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TipologiaLavoroId");
-
                     b.ToTable("anagrafica_dipendente");
-                });
-
-            modelBuilder.Entity("corsosharp.Models.GiornataLavorativa", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Azienda")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<DateTime>("Data")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid>("DipendenteId")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("dipendente_id");
-
-                    b.Property<string>("Mansione")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<string>("Note")
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal>("OreLavorate")
-                        .HasColumnType("decimal(65,30)")
-                        .HasColumnName("ore_lavorate");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DipendenteId");
-
-                    b.ToTable("giornate_lavorative");
                 });
 
             modelBuilder.Entity("corsosharp.Models.TipologiaLavoro", b =>
@@ -161,31 +124,6 @@ namespace corsosharp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("users");
-                });
-
-            modelBuilder.Entity("corsosharp.Models.AnagrafiaDipendente", b =>
-                {
-                    b.HasOne("corsosharp.Models.TipologiaLavoro", "TipologiaLavoro")
-                        .WithMany()
-                        .HasForeignKey("TipologiaLavoroId");
-
-                    b.Navigation("TipologiaLavoro");
-                });
-
-            modelBuilder.Entity("corsosharp.Models.GiornataLavorativa", b =>
-                {
-                    b.HasOne("corsosharp.Models.AnagrafiaDipendente", "Dipendente")
-                        .WithMany("GiornateLavorative")
-                        .HasForeignKey("DipendenteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Dipendente");
-                });
-
-            modelBuilder.Entity("corsosharp.Models.AnagrafiaDipendente", b =>
-                {
-                    b.Navigation("GiornateLavorative");
                 });
 #pragma warning restore 612, 618
         }

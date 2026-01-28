@@ -1,3 +1,6 @@
+#DoIt fare una ValidationText 
+
+
 # CorsoSharp API
 
 API REST con ASP.NET Core 9, JWT Authentication e MySQL.
@@ -18,7 +21,7 @@ docker compose up -d
 
 | Email | Password | Ruolo |
 |-------|----------|-------|
-| admin@example.com | admin123 | Admin |
+| admin@admin.it | admin | Admin |
 | user@example.com | user123 | User |
 
 ---

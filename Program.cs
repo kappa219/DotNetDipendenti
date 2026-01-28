@@ -11,6 +11,7 @@ using System.Security.Claims;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -62,6 +63,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+
+
+    
+
 builder.Services.AddAuthorization();
 
 // CORS - permette richieste dal frontend
@@ -81,6 +86,7 @@ builder.Services.AddCors(options =>
 // - AddSingleton = una sola istanza per tutta l'app
 // - AddTransient = nuova istanza ogni volta che viene richiesta
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<AnagrafiaService>();
 
 // Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -89,6 +95,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.EnsureCreated();
+}
+
 
 // Abilita CORS (deve essere prima di MapControllers)
 app.UseCors("AllowAll");

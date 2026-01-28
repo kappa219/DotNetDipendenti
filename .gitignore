@@ -23,3 +23,6 @@ obj/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Docker (contiene password)
+docker-compose.yml
