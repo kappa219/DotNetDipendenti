@@ -90,6 +90,9 @@ builder.Services.AddScoped<AnagrafiaService>();
 
 // Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// DatabaseConnection per ADO.NET (MySqlClient)
+builder.Services.AddScoped(_ => new corsosharp.DB.DatabaseConnection(connectionString!));
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
     builder.Services.AddScoped<IAuthService, AuthService>();
