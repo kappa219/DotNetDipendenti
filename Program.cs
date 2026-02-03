@@ -87,6 +87,7 @@ builder.Services.AddCors(options =>
 // - AddTransient = nuova istanza ogni volta che viene richiesta
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<AnagrafiaService>();
+builder.Services.AddScoped<GiornateLavorativeServices>();
 
 // Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

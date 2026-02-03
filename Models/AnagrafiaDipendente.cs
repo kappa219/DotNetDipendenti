@@ -18,7 +18,7 @@ public class AnagrafiaDipendente
     [MaxLength(100)] 
     public string Cognome { get; set; } = string.Empty;
     [MaxLength(30) ]
-public string Indirizzo { get; set; } = string.Empty;
+    public string Indirizzo { get; set; } = string.Empty;
     public int Eta { get; set;  }   
     [Required]
     public DateTime DataAssunzione { get; set; } 
@@ -31,5 +31,6 @@ public string Indirizzo { get; set; } = string.Empty;
     public TipologiaLavoro? TipologiaLavoro { get; set; }
 
     // (relazione 1-N)
+    [InverseProperty("Dipendente")]
     public ICollection<GiornataLavorativa> GiornateLavorative { get; set; } = new List<GiornataLavorativa>();
 }

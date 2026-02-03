@@ -23,9 +23,13 @@ public class GiornataLavorativa
 
     [MaxLength(100)]
     public string Mansione { get; set; } = string.Empty;
+    [Required]
+    public int Ora { get; set; }
+
 
     [MaxLength(500)]
     public string? Note { get; set; }
+    public string ? TitoloNota{get;set;}
 
     // Navigation property
     [ForeignKey("DipendenteId")]

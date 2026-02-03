@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using corsosharp.Data;
 
@@ -11,9 +12,11 @@ using corsosharp.Data;
 namespace corsosharp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260202104739_aggiuntocamponote")]
+    partial class aggiuntocamponote
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,9 +95,6 @@ namespace corsosharp.Migrations
                     b.Property<string>("Note")
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
-
-                    b.Property<int>("Ora")
-                        .HasColumnType("int");
 
                     b.Property<decimal>("OreLavorate")
                         .HasColumnType("decimal(65,30)")
