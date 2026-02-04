@@ -79,6 +79,8 @@ public class GiornateLavorativeServices
         giornata.Ora = giornataAggiornata.Ora;
         giornata.Note = giornataAggiornata.Note;
         giornata.TitoloNota = giornataAggiornata.TitoloNota;
+        giornata.OraInizio = giornataAggiornata.OraInizio;
+        giornata.OraFine = giornataAggiornata.OraFine;
 
         await _context.SaveChangesAsync();
         return "giornata aggiornata";

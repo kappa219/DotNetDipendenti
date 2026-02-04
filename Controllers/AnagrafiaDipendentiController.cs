@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using corsosharp.Data;
 using corsosharp.Models;
 using corsosharp.DTOs;
 using corsosharp.Services;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using corsosharp.DB;
 using MySqlConnector;
@@ -17,13 +14,11 @@ namespace corsosharp.Controllers;
 public class AnagrafiaDipendentiController : ControllerBase
 
 {
-    private AnagrafiaService _anagrafiaService;
-    private readonly ApplicationDbContext _context;
+    private readonly AnagrafiaService _anagrafiaService;
     private readonly DatabaseConnection _dbConnection;
 
-    public AnagrafiaDipendentiController(ApplicationDbContext context, AnagrafiaService anagrafiaService, DatabaseConnection dbConnection)
+    public AnagrafiaDipendentiController(AnagrafiaService anagrafiaService, DatabaseConnection dbConnection)
     {
-        _context = context;
         _anagrafiaService = anagrafiaService;
         _dbConnection = dbConnection;
     }
@@ -40,9 +35,7 @@ public class AnagrafiaDipendentiController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<AnagrafiaDipendente>> GetById(Guid id)
     {
-        var dipendente = await _context.AnagrafiaDipendente
-            .Include(d => d.TipologiaLavoro)
-            .FirstOrDefaultAsync(d => d.Id == id);
+        var dipendente = await _anagrafiaService.GetById(id);
 
         if (dipendente == null)
             return NotFound();
@@ -66,43 +59,40 @@ public class AnagrafiaDipendentiController : ControllerBase
             TipologiaLavoroId = dto.TipologiaLavoroId
         };
 
-        _context.AnagrafiaDipendente.Add(dipendente);
-        await _context.SaveChangesAsync();
+        var creato = await _anagrafiaService.Create(dipendente);
 
-        return CreatedAtAction(nameof(GetById), new { id = dipendente.Id }, dipendente);
+        return CreatedAtAction(nameof(GetById), new { id = creato.Id }, creato);
     }
 
     // PUT /api/anagrafiadipendenti/{id}
     [HttpPut("{id}")]
     public async Task<ActionResult<AnagrafiaDipendente>> Update(Guid id, [FromBody] UpdateAnagrafiaDipendenteDto dto)
     {
-        var existing = await _context.AnagrafiaDipendente.FindAsync(id);
-        if (existing == null)
+        var datiAggiornati = new AnagrafiaDipendente
+        {
+            Nome = dto.Nome,
+            Cognome = dto.Cognome,
+            Eta = dto.Eta,
+            DataAssunzione = dto.DataAssunzione,
+            DataDimissione = dto.DataDimissione,
+            Stipendio = dto.Stipendio,
+            TipologiaLavoroId = dto.TipologiaLavoroId
+        };
+
+        var aggiornato = await _anagrafiaService.Update(id, datiAggiornati);
+        if (aggiornato == null)
             return NotFound();
 
-        existing.Nome = dto.Nome;
-        existing.Cognome = dto.Cognome;
-        existing.Eta = dto.Eta;
-        existing.DataAssunzione = dto.DataAssunzione;
-        existing.DataDimissione = dto.DataDimissione;
-        existing.Stipendio = dto.Stipendio;
-        existing.TipologiaLavoroId = dto.TipologiaLavoroId;
-
-        await _context.SaveChangesAsync();
-
-        return Ok(existing);
+        return Ok(aggiornato);
     }
 
     // DELETE /api/anagrafiadipendenti/{id}
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var dipendente = await _context.AnagrafiaDipendente.FindAsync(id);
-        if (dipendente == null)
+        var eliminato = await _anagrafiaService.Delete(id);
+        if (!eliminato)
             return NotFound();
-
-        _context.AnagrafiaDipendente.Remove(dipendente);
-        await _context.SaveChangesAsync();
 
         return NoContent();
     }

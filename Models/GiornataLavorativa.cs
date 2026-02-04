@@ -26,6 +26,16 @@ public class GiornataLavorativa
     [Required]
     public int Ora { get; set; }
 
+    
+    [Required]
+    public TimeOnly OraInizio { get; set; }
+
+
+    [Required]
+    public TimeOnly OraFine  { get; set; }
+
+
+
 
     [MaxLength(500)]
     public string? Note { get; set; }

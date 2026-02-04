@@ -45,7 +45,9 @@ public class GiornateLavorativeController : ControllerBase
             Mansione = dto.Mansione,
             Ora = dto.Ora,
             Note = dto.Note,
-            TitoloNota = dto.TitoloNota
+            TitoloNota = dto.TitoloNota,
+            OraInizio = dto.OraInizio,
+            OraFine = dto.OraFine
         };
         var messaggio = await _giornatelavorative.insertGiornata(giornata);
         return Ok(messaggio);
@@ -70,7 +72,9 @@ public class GiornateLavorativeController : ControllerBase
             Mansione = dto.Mansione,
             Ora = dto.Ora,
             Note = dto.Note,
-            TitoloNota = dto.TitoloNota
+            TitoloNota = dto.TitoloNota,
+            OraInizio = dto.OraInizio,
+            OraFine = dto.OraFine
         };
         var messaggio = await _giornatelavorative.updateGiornata(id, giornata);
         _logger.LogInformation("Giornata aggiornata: {GiornataId}", id);

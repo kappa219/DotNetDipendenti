@@ -10,4 +10,7 @@ public class GiornataLavorativaCreateDto
     public int Ora { get; set; }
     public string? Note { get; set; }
     public string? TitoloNota { get; set; }
+
+    public TimeOnly OraInizio { get; set; }
+    public TimeOnly OraFine { get; set; }
 }

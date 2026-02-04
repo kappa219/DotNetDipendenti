@@ -31,6 +31,49 @@ public class AnagrafiaService
         return dipendenti.Select(d => MapToDto(d));
     }
 
+    public async Task<AnagrafiaDipendente?> GetById(Guid id)
+    {
+        return await _context.AnagrafiaDipendente
+            .Include(d => d.TipologiaLavoro)
+            .FirstOrDefaultAsync(d => d.Id == id);
+    }
+
+    public async Task<AnagrafiaDipendente> Create(AnagrafiaDipendente dipendente)
+    {
+        _context.AnagrafiaDipendente.Add(dipendente);
+        await _context.SaveChangesAsync();
+        return dipendente;
+    }
+
+    public async Task<AnagrafiaDipendente?> Update(Guid id, AnagrafiaDipendente datiAggiornati)
+    {
+        var existing = await _context.AnagrafiaDipendente.FindAsync(id);
+        if (existing == null)
+            return null;
+
+        existing.Nome = datiAggiornati.Nome;
+        existing.Cognome = datiAggiornati.Cognome;
+        existing.Eta = datiAggiornati.Eta;
+        existing.DataAssunzione = datiAggiornati.DataAssunzione;
+        existing.DataDimissione = datiAggiornati.DataDimissione;
+        existing.Stipendio = datiAggiornati.Stipendio;
+        existing.TipologiaLavoroId = datiAggiornati.TipologiaLavoroId;
+
+        await _context.SaveChangesAsync();
+        return existing;
+    }
+
+    public async Task<bool> Delete(Guid id)
+    {
+        var dipendente = await _context.AnagrafiaDipendente.FindAsync(id);
+        if (dipendente == null)
+            return false;
+
+        _context.AnagrafiaDipendente.Remove(dipendente);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
 
 
 
