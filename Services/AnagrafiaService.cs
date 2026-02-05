@@ -23,10 +23,16 @@ public class AnagrafiaService
 
     public async Task<IEnumerable<AnagrafiaDipendentiDto>> GetAll()
     {
+       // DateTime oggi = new DateTime(2024, 6, 20);
         var dipendenti = await _context.AnagrafiaDipendente
             .Include(d => d.TipologiaLavoro)
            // .Where(d => d.DataDimissione == null)
             .ToListAsync();
+  //questa ritorna tutti i dipendenti dopo una certa data
+            // var esempio = await _context.AnagrafiaDipendente
+            // .FromSql($"SELECT * FROM anagrafica_dipendente WHERE data_dimissione < {oggi}")
+            // .OrderBy(d => d.DataDimissione)
+            // .ToListAsync();
 
         return dipendenti.Select(d => MapToDto(d));
     }

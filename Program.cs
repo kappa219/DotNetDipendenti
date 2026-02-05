@@ -17,7 +17,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "CorsoSharp API", Version = "v1" });
+    options.SwaggerDoc( "v1", new OpenApiInfo { Title = "CorsoSharp API", Version = "v1" });
 
     // Configurazione JWT per Swagger
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -27,7 +27,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Inserisci il token JWT. Esempio: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+       // Description = "Inserisci il token JWT. Esempio: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -119,12 +119,14 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
-
+    
 app.MapScalarApiReference(options =>
 {
     options.WithOpenApiRoutePattern("/swagger/{documentName}/swagger.json");
 });
+
+}
+
 
 //app.UseHttpsRedirection();
 
