@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace corsosharp.Services;
 
@@ -21,9 +22,8 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto?> LoginAsync(LoginDto dto)
     {
-
         var user = await _context.Users
-.FirstOrDefaultAsync(u => u.Email == dto.Email);
+            .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
         if (user == null)
             return null;
@@ -31,9 +31,7 @@ public class AuthService : IAuthService
         if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
             return null;
 
-        //  Genero il token JWT
         var token = GenerateJwtToken(user);
-
 
         return new AuthResponseDto
         {
@@ -43,7 +41,7 @@ public class AuthService : IAuthService
                 Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
-                Role=user.Role,
+                Role = user.Role,
                 CreatedAt = user.CreatedAt,
                 UpdatedAt = user.UpdatedAt
             }

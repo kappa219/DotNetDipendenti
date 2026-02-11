@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using corsosharp.DTOs;
 using corsosharp.Services;
 using Microsoft.AspNetCore.Authorization;
+using corsosharp.DB;
 
 namespace corsosharp.Controllers;
 
@@ -10,11 +11,13 @@ namespace corsosharp.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly DatabaseConnection _databaseConnection;
 
     // Dependency Injection (come @Autowired)
-    public UsersController(IUserService userService)
+    public UsersController(IUserService userService, DatabaseConnection databaseConnection)
     {
         _userService = userService;
+        _databaseConnection = databaseConnection;
     }
 
     // GET /api/users
@@ -92,5 +95,14 @@ public class UsersController : ControllerBase
             return NotFound();
 
         return Ok(user);
+    }
+
+
+    [HttpGet("search")]
+    public async Task<ActionResult<IEnumerable<UserResponseDto>>> Search([FromQuery] string? name = null, [FromQuery] string? email = null)
+    {
+        
+             return Ok("");
+      
     }
 }

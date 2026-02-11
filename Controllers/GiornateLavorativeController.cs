@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using corsosharp.Services;
 using corsosharp.Models;
 using corsosharp.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace corsosharp.Controllers;
 
@@ -19,7 +20,7 @@ public class GiornateLavorativeController : ControllerBase
         _logger = logger;
     }
 
-
+  [Authorize(Roles = "Admin,User")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GiornataLavorativa>>> GetAll()
     {

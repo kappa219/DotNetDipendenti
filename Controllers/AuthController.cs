@@ -21,10 +21,13 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginDto dto)
     {
+        if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
+            return BadRequest(new { Message = "Email e password sono obbligatori" });
+
         var result = await _authService.LoginAsync(dto);
 
         if (result == null)
-            return Unauthorized("Email o password non validi");
+            return Unauthorized(new { Message = "Email o password non validi" });
 
         return Ok(result);
     }

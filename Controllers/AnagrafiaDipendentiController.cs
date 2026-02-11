@@ -103,7 +103,7 @@ public class AnagrafiaDipendentiController : ControllerBase
 
     [HttpGet("dimessionati")]
     public async Task<ActionResult<IEnumerable<AnagrafiaDipendente>>> GetCustomQuery()
-    {
+    {      
         var connection = _dbConnection.GetConnection();
         if (connection == null)
         {
