@@ -19,7 +19,7 @@ public class AnagrafiaDipendente
     public string Cognome { get; set; } = string.Empty;
     [MaxLength(30) ]
     public string Indirizzo { get; set; } = string.Empty;
-    public int Eta { get; set;  }   
+    public int Eta { get; set;  }   = 0;
     [Required]
     public DateTime DataAssunzione { get; set; } 
     public DateTime? DataDimissione { get; set; }
@@ -27,8 +27,14 @@ public class AnagrafiaDipendente
     [Column("tipologia_lavoro_id")]
     public Guid? TipologiaLavoroId { get; set;  }
 
+
+    [Required]
+    public string codiceFiscale { get; set; } = string.Empty;
+
+
     [ForeignKey("TipologiaLavoroId")]
     public TipologiaLavoro? TipologiaLavoro { get; set; }
+
 
     // (relazione 1-N)
     [InverseProperty("Dipendente")]

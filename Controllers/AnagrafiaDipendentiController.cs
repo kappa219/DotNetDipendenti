@@ -29,7 +29,7 @@ public class AnagrafiaDipendentiController : ControllerBase
     {
         var dipendenti = await _anagrafiaService.GetAll();
         return Ok(dipendenti);
-    }
+    }//
 
     // // // GET /api/anagrafiadipendenti/{id}
     [HttpGet("{id:guid}")]
@@ -94,7 +94,7 @@ public class AnagrafiaDipendentiController : ControllerBase
         if (!eliminato)
             return NotFound();
 
-        return NoContent();
+        return Ok("Dipendente eliminato con successo.");
     }
 
 
