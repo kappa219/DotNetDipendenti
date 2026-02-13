@@ -44,4 +44,9 @@ public class GiornataLavorativa
     // Navigation property
     [ForeignKey("DipendenteId")]
     public AnagrafiaDipendente? Dipendente { get; set; }
+
+    public override string ToString()
+    {
+        return $"Giornata [Data={Data:dd/MM/yyyy}, Azienda={Azienda}, Mansione={Mansione}, Ore={OreLavorate}, Orario={OraInizio}-{OraFine}]";
+    }
 }

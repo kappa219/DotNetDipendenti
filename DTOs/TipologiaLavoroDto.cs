@@ -11,6 +11,7 @@ public class TipologiaLavoroDto
 
 public class GetTipologiaLavoroDto
 {
+    public Guid Id { get; set; }
     public string Nome { get; set; } = string.Empty;
     public string Descrizione { get; set; } = string.Empty;
 }

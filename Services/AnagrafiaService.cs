@@ -14,15 +14,20 @@ public class AnagrafiaService
 {
      private readonly ApplicationDbContext _context;
     private readonly IConfiguration _configuration;
+        private readonly ILogger<AnagrafiaService> _logger;
 
-    public AnagrafiaService(ApplicationDbContext context, IConfiguration configuration)
+    public AnagrafiaService(ApplicationDbContext context, IConfiguration configuration, ILogger<AnagrafiaService> logger)
     {
+        _logger = logger;
         _context = context;
         _configuration = configuration;
     }
 
     public async Task<IEnumerable<AnagrafiaDipendentiDto>> GetAll()
     {
+_logger.LogInformation("Recupero di tutti i dipendenti in corso...");
+//_logger.LogDebug("Query SQL: SELECT * FROM anagrafica_dipendente");
+
        // DateTime oggi = new DateTime(2024, 6, 20);
         var dipendenti = await _context.AnagrafiaDipendente
             .Include(d => d.TipologiaLavoro)
@@ -77,6 +82,8 @@ public class AnagrafiaService
 
         _context.AnagrafiaDipendente.Remove(dipendente);
         await _context.SaveChangesAsync();
+
+        _logger.LogDebug("Dipendente eliminato: {DipendenteId}", id);
         return true;
     }
 

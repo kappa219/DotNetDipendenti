@@ -25,12 +25,14 @@ public class GiornateLavorativeController : ControllerBase
     public async Task<ActionResult<IEnumerable<GiornataLavorativa>>> GetAll()
     {
         var giornate = await _giornatelavorative.Allgiornate();
+      
         return Ok(giornate);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<IEnumerable<GiornataLavorativa>>> GetByDipendente(Guid id)
     {
+        _logger.LogInformation("Recupero giornate per dipendente con ID: {DipendenteId}", id);
         var giornate = await _giornatelavorative.giornatedipentente(id);
         return Ok(giornate);
     }
@@ -50,6 +52,7 @@ public class GiornateLavorativeController : ControllerBase
             OraInizio = dto.OraInizio,
             OraFine = dto.OraFine
         };
+        _logger.LogInformation("Inserimento giornata per dipendente con ID: {DipendenteId}", dto.DipendenteId);
         var messaggio = await _giornatelavorative.insertGiornata(giornata);
         return Ok(messaggio);
     }
@@ -57,6 +60,7 @@ public class GiornateLavorativeController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteGiornata(Guid id)
     {
+           _logger.LogError("Giornata eliminata: {GiornataId}", id);
         var messaggio = await _giornatelavorative.deleteGiornata(id);
         return Ok(messaggio);
     }
@@ -78,7 +82,9 @@ public class GiornateLavorativeController : ControllerBase
             OraFine = dto.OraFine
         };
         var messaggio = await _giornatelavorative.updateGiornata(id, giornata);
-        _logger.LogInformation("Giornata aggiornata: {GiornataId}", id);
+        _logger.LogInformation("Giornata aggiornata: {GiornataId} , {Giornata}", id, giornata);
+        //_logger.LogInformation("Giornata aggiornata: {GiornataId}, Dipendente: {DipendenteId}, Data: {Data}",id, giornata.DipendenteId, giornata.Data);
+
         return Ok(messaggio);
     }
 

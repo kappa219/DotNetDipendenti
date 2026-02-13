@@ -8,7 +8,7 @@ using MySqlConnector;
 
 
 namespace corsosharp.Controllers;
-
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class AnagrafiaDipendentiController : ControllerBase
