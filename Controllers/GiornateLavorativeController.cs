@@ -3,6 +3,7 @@ using corsosharp.Services;
 using corsosharp.Models;
 using corsosharp.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace corsosharp.Controllers;
 
@@ -12,7 +13,7 @@ namespace corsosharp.Controllers;
 public class GiornateLavorativeController : ControllerBase
 {
     private readonly GiornateLavorativeServices _giornatelavorative;
-       private readonly ILogger<GiornateLavorativeController> _logger;
+    private readonly ILogger<GiornateLavorativeController> _logger;
 
     public GiornateLavorativeController(GiornateLavorativeServices giornateLavorative, ILogger<GiornateLavorativeController> logger)
     {
@@ -20,22 +21,43 @@ public class GiornateLavorativeController : ControllerBase
         _logger = logger;
     }
 
-  [Authorize(Roles = "Admin,User")]
+    [Authorize(Roles = "Admin,User")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GiornataLavorativa>>> GetAll()
     {
         var giornate = await _giornatelavorative.Allgiornate();
-      
+
         return Ok(giornate);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<IEnumerable<GiornataLavorativa>>> GetByDipendente(Guid id)
+    public async Task<ActionResult<IEnumerable<GiornataLavorativa>>> GetByDipendente(
+        Guid id, [FromQuery] DateTime? dataInizio, [FromQuery] DateTime? dataFine
+        )
     {
-        _logger.LogInformation("Recupero giornate per dipendente con ID: {DipendenteId}", id);
-        var giornate = await _giornatelavorative.giornatedipentente(id);
-        return Ok(giornate);
+        _logger.LogInformation("Recupero giornate per dipendente con ID: {DipendenteId} con data da {DataInizio} a {DataFine}", id, dataInizio, dataFine);
+        if (dataInizio == null || dataFine == null)
+        {
+            _logger.LogInformation("Recupero giornate senza filtro per costruire file EXEL : {DipendenteId}", id);
+            var giornate = await _giornatelavorative.giornatedipentente(id);
+            return Ok(giornate);
+        } 
+        else
+        {   
+
+        // var giornate = await _giornatelavorative.giornatedipentente(id );
+         _logger.LogInformation("Recupero giornate con filtro di data per dipendente con ID: {DipendenteId} da {DataInizio} a {DataFine} per file exel", id, dataInizio, dataFine);
+        var giornatesettimanali = await _giornatelavorative.giornatedipententeforweek(id, dataInizio, dataFine);
+
+        return Ok(giornatesettimanali);
+
+        }
     }
+
+
+  
+
+
     [HttpPost]
     public async Task<IActionResult> insertEvent(GiornataLavorativaCreateDto dto)
     {
@@ -60,7 +82,7 @@ public class GiornateLavorativeController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteGiornata(Guid id)
     {
-           _logger.LogError("Giornata eliminata: {GiornataId}", id);
+        _logger.LogError("Giornata eliminata: {GiornataId}", id);
         var messaggio = await _giornatelavorative.deleteGiornata(id);
         return Ok(messaggio);
     }

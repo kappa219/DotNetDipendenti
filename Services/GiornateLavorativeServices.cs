@@ -85,5 +85,15 @@ public class GiornateLavorativeServices
         await _context.SaveChangesAsync();
         return "giornata aggiornata";
     }
+    public async Task<List<GiornataLavorativa>> giornatedipententeforweek(Guid id, DateTime? dataInizio, DateTime? dataFine)
+    {
+        var giornate = await _context.GiornateLavorative.Where(g => g.DipendenteId == id
+        && g.Data >= dataInizio && g.Data <= dataFine)
+        .OrderByDescending(giornate => giornate.Data)
+        .ToListAsync();
+
+        return giornate;
+
+    }
 
 }
