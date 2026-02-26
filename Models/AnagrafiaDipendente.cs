@@ -31,6 +31,9 @@ public class AnagrafiaDipendente
     [Required]
     public string codiceFiscale { get; set; } = string.Empty;
 
+    [MaxLength(500)]
+    public string? FotoPercorso { get; set; }
+
 
     [ForeignKey("TipologiaLavoroId")]
     public TipologiaLavoro? TipologiaLavoro { get; set; }

@@ -16,11 +16,13 @@ public class AnagrafiaDipendentiController : ControllerBase
 {
     private readonly AnagrafiaService _anagrafiaService;
     private readonly DatabaseConnection _dbConnection;
+    private readonly IWebHostEnvironment _env;
 
-    public AnagrafiaDipendentiController(AnagrafiaService anagrafiaService, DatabaseConnection dbConnection)
+    public AnagrafiaDipendentiController(AnagrafiaService anagrafiaService, DatabaseConnection dbConnection, IWebHostEnvironment env)
     {
         _anagrafiaService = anagrafiaService;
         _dbConnection = dbConnection;
+        _env = env;
     }
 
     // GET /api/anagrafiadipendenti
@@ -84,6 +86,26 @@ public class AnagrafiaDipendentiController : ControllerBase
             return NotFound();
 
         return Ok(aggiornato);
+    }
+
+    // POST /api/anagrafiadipendenti/{id}/foto
+    [HttpPost("{id:guid}/foto")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UploadFoto(Guid id, IFormFile foto)
+    {
+        if (foto == null || foto.Length == 0)
+            return BadRequest("Nessun file ricevuto.");
+
+        var estensioni = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+        var ext = Path.GetExtension(foto.FileName).ToLowerInvariant();
+        if (!estensioni.Contains(ext))
+            return BadRequest("Formato non supportato. Usa jpg, png, gif o webp.");
+
+        var percorso = await _anagrafiaService.UploadFoto(id, foto, _env.WebRootPath);
+        if (percorso == null)
+            return NotFound();
+
+        return Ok(new { FotoUrl = percorso });
     }
 
     // DELETE /api/anagrafiadipendenti/{id}

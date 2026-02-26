@@ -111,6 +111,9 @@ using (var scope = app.Services.CreateScope())
 }
 
 
+// Serve i file statici (immagini, ecc.) dalla cartella wwwroot
+app.UseStaticFiles();
+
 // Abilita CORS (deve essere prima di MapControllers)
 app.UseCors("AllowAll");
 

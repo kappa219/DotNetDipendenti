@@ -74,6 +74,30 @@ _logger.LogInformation("Recupero di tutti i dipendenti in corso...");
         return existing;
     }
 
+    public async Task<string?> UploadFoto(Guid id, IFormFile file, string webRootPath)
+    {
+        var dipendente = await _context.AnagrafiaDipendente.FindAsync(id);
+        if (dipendente == null)
+            return null;
+
+        var uploadsDir = Path.Combine(webRootPath, "uploads", "dipendenti");
+        Directory.CreateDirectory(uploadsDir);
+
+        var estensione = Path.GetExtension(file.FileName).ToLowerInvariant();
+        var nomeFile = $"{id}{estensione}";
+        var percorsoCompleto = Path.Combine(uploadsDir, nomeFile);
+
+        using (var stream = new FileStream(percorsoCompleto, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        dipendente.FotoPercorso = $"/uploads/dipendenti/{nomeFile}";
+        await _context.SaveChangesAsync();
+
+        return dipendente.FotoPercorso;
+    }
+
     public async Task<bool> Delete(Guid id)
     {
         var dipendente = await _context.AnagrafiaDipendente.FindAsync(id);
@@ -109,7 +133,8 @@ _logger.LogInformation("Recupero di tutti i dipendenti in corso...");
             {
                 //Id = d.TipologiaLavoro.Id,
                 Descrizione = d.TipologiaLavoro.Descrizione
-            } : null
+            } : null,
+            FotoUrl = d.FotoPercorso
         };
     }
 }

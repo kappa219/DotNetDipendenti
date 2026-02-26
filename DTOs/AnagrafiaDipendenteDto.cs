@@ -53,4 +53,5 @@ public class AnagrafiaDipendentiDto
     public DateTime? DataDimissione { get; set; }
     public decimal Stipendio { get; set; }
     public TipologiaLavoroDto ? TipologiaLavoro { get; set; }
+    public string? FotoUrl { get; set; }
 }

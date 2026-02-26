@@ -25,6 +25,30 @@ dotnet ef dbcontext scaffold "Server=localhost;Database=nomedb;User=root;Passwor
 " Pomelo.EntityFrameworkCore.MySql -o Models
 
 
+Je vis dans les abysses
+La lumière n'passe pas ici
+C'est pas les monstres au fond, le pire
+C'est tout le poids qu'je traîne
+Je vis dans les abysses
+La lumière n'passe pas ici
+C'est pas les monstres au fond, le pire
+C'est tout le poids qu'je traîne
+
+[Couplet 1]
+J'suis comme au-, j'suis comme au fond du trou
+Comme au fond d'un puits sans fond, comment on fait pour en fuir, enfin ?
+Comment, comment, comment on fait pour en fuir, enfin ?
+(Comment on fait pour en fuir ?) Comment ?
+J'ai tellement regardé dans l'abîme
+Je suis un peu abimé, je sais, j'suis translucide
+Tellement j'vois jamais les UV
+J'ai tellement d'soucis, c'est nulle part indiqué "sortie"
+
+[Pré-refrain]
+Jour
+Vais-je remonter un jou
+
+
 
 
 

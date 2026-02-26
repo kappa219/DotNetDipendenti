@@ -29,11 +29,11 @@ public class GiornateLavorativeController : ControllerBase
 
         return Ok(giornate);
     }
-
+   //qui cosa devo fare perche se  c'è data inizio e data fine mi deve filtrare per settimana altrimenti mi deve restituire tutte le giornate del dipendente per costruire il file exel
+   // non so se è corretto mettere due if uno dentro l'altro oppure se è meglio mettere un if con una condizione che verifica se data inizio e data fine sono null o no
     [HttpGet("{id}")]
     public async Task<ActionResult<IEnumerable<GiornataLavorativa>>> GetByDipendente(
-        Guid id, [FromQuery] DateTime? dataInizio, [FromQuery] DateTime? dataFine
-        )
+        Guid id, [FromQuery] DateTime? dataInizio, [FromQuery] DateTime? dataFine)
     {
         _logger.LogInformation("Recupero giornate per dipendente con ID: {DipendenteId} con data da {DataInizio} a {DataFine}", id, dataInizio, dataFine);
         if (dataInizio == null || dataFine == null)
