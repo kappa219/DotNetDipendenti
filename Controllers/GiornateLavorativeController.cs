@@ -21,7 +21,7 @@ public class GiornateLavorativeController : ControllerBase
         _logger = logger;
     }
 
-    [Authorize(Roles = "Admin,User")]
+   // [Authorize(Roles = "Admin,User")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GiornataLavorativa>>> GetAll()
     {

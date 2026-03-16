@@ -1,23 +1,24 @@
 using corsosharp.DTOs;
 using corsosharp.Data;
+using corsosharp.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace corsosharp.Services;
 
 public class AuthService : IAuthService
 {
     private readonly ApplicationDbContext _context;
-    private readonly IConfiguration _configuration;
+    private readonly JwtSettings _jwtSettings;
 
-    public AuthService(ApplicationDbContext context, IConfiguration configuration)
+    public AuthService(ApplicationDbContext context, IOptions<JwtSettings> jwtOptions)
     {
         _context = context;
-        _configuration = configuration;
+        _jwtSettings = jwtOptions.Value;
     }
 
     public async Task<AuthResponseDto?> LoginAsync(LoginDto dto)
@@ -48,12 +49,9 @@ public class AuthService : IAuthService
         };
     }
 
-    private string GenerateJwtToken(Models.Users user)
+    private string GenerateJwtToken(Users user)
     {
-        var secret = _configuration["Jwt:Secret"]
-            ?? throw new InvalidOperationException("Jwt:Secret non configurato in appsettings.json");
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
@@ -63,10 +61,10 @@ public class AuthService : IAuthService
         };
 
         var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
+            issuer: _jwtSettings.Issuer,
+            audience: _jwtSettings.Audience,
             claims: claims,
-            expires: DateTime.Now.AddHours(1),
+            expires: DateTime.Now.AddMinutes(_jwtSettings.ExpirationMinutes),
             signingCredentials: credentials
         );
 
@@ -76,6 +74,5 @@ public class AuthService : IAuthService
     public Task LogoutAsync()
     {
         return Task.CompletedTask;
-
     }
 }

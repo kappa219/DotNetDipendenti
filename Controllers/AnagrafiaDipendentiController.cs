@@ -8,7 +8,7 @@ using MySqlConnector;
 
 
 namespace corsosharp.Controllers;
-[Authorize]
+//[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class AnagrafiaDipendentiController : ControllerBase
@@ -47,7 +47,7 @@ public class AnagrafiaDipendentiController : ControllerBase
 
     // // POST /api/anagrafiadipendenti
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public async Task<ActionResult<AnagrafiaDipendente>> Create([FromBody] CreateAnagrafiaDipendenteDto dto)
     {
         var dipendente = new AnagrafiaDipendente
@@ -90,7 +90,7 @@ public class AnagrafiaDipendentiController : ControllerBase
 
     // POST /api/anagrafiadipendenti/{id}/foto
     [HttpPost("{id:guid}/foto")]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public async Task<IActionResult> UploadFoto(Guid id, IFormFile foto)
     {
         if (foto == null || foto.Length == 0)

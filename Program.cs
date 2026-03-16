@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Security.Claims;
 using Scalar.AspNetCore;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc( "v1", new OpenApiInfo { Title = "CorsoSharp API", Version = "v1" });
@@ -68,6 +71,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
     
 
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+
 builder.Services.AddAuthorization();
 
 // CORS - permette richieste dal frontend
@@ -102,6 +107,21 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 
     builder.Services.AddScoped<IAuthService, AuthService>();
+
+// MassTransit con RabbitMQ per messaggistica asincrona
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((ctx, cfg) =>
+    {
+        cfg.Host("localhost", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+    });
+});
+
+builder.Services.AddScoped<ReportClientService>();
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
