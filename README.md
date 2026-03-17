@@ -261,10 +261,10 @@ dotnet run
 ### Fermare tutto
 
 ```bash
-# Ferma Seq
+# Ferma Seq (porta 5341 AMQP, porta 8081 UI)
 docker compose -f docker-compose.seq.yml down
 
-# Ferma RabbitMQ
+# Ferma RabbitMQ (porta 5672 AMQP, porta 15672 UI)
 docker stop rabbitmq
 ```
 
