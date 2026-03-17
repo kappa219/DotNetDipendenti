@@ -1,0 +1,14 @@
+services:
+  seq:
+    image: datalust/seq:latest
+    ports:
+      - "5341:5341"   # i tuoi servizi mandano i log qui
+      - "8081:80"     # UI → apri localhost:8081
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_FIRSTRUN_ADMINPASSWORD: "Admin1234!"
+    volumes:
+      - seq-data:/data
+
+volumes:
+  seq-data:

@@ -14,23 +14,32 @@ public class AuthService : IAuthService
 {
     private readonly ApplicationDbContext _context;
     private readonly JwtSettings _jwtSettings;
+    private readonly ILogger<AuthService> Logger;
 
-    public AuthService(ApplicationDbContext context, IOptions<JwtSettings> jwtOptions)
-    {
+    public AuthService(ApplicationDbContext context, IOptions<JwtSettings> jwtOptions, ILogger<AuthService> logger)
+    {   
         _context = context;
         _jwtSettings = jwtOptions.Value;
+        Logger = logger;
     }
 
     public async Task<AuthResponseDto?> LoginAsync(LoginDto dto)
     {
+        Logger.LogInformation("Attempting to log in user with email: {Email}", dto.Email);
         var user = await _context.Users
             .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
         if (user == null)
+        {
+            Logger.LogWarning("Login failed for user with email: {Email}", dto.Email);
             return null;
+        }
 
         if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
+        {
+            Logger.LogWarning("Login failed for user with email: {Email}", dto.Email);
             return null;
+        }
 
         var token = GenerateJwtToken(user);
 

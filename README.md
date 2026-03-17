@@ -177,10 +177,95 @@ corsosharp/
 ## Comandi Docker
 
 ```bash
-docker compose up -d          # Avvia
+docker compose up -d          # Avvia MySQL + API + Frontend
 docker compose down           # Ferma
 docker compose down -v        # Reset completo
 docker compose logs api -f    # Log API
+```
+
+---
+
+## Logging con Serilog + Seq
+
+I log dell'applicazione vengono scritti su tre destinazioni:
+- **Console** (terminale)
+- **Seq** (UI web per visualizzare e filtrare i log)
+- **MySQL** (tabella `Logs` nel database)
+
+### Avviare Seq
+
+Seq gira in un container Docker separato:
+
+```bash
+docker compose -f docker-compose.seq.yml up -d
+```
+
+| Accesso | URL |
+|---------|-----|
+| UI Seq (visualizza log) | http://localhost:8081 |
+| Endpoint ricezione log | http://localhost:5341 |
+
+Per fermarlo:
+```bash
+docker compose -f docker-compose.seq.yml down
+```
+
+### Configurazione Serilog (Program.cs)
+
+I log di framework (ASP.NET, EF Core, System) sono filtrati a livello `Warning` per non inquinare la vista.
+Solo i log personalizzati dell'applicazione appaiono a livello `Information`.
+
+### Cancellare i log in Seq
+
+- **Singoli**: seleziona con la checkbox e clicca **Delete**
+- **Tutti**: Settings (ingranaggio) → Storage → **Delete all events**
+
+---
+
+## Messaggistica con RabbitMQ
+
+RabbitMQ viene usato per la generazione asincrona dei report (es. Excel di tutti i dipendenti).
+
+### Avviare RabbitMQ
+
+Il container esiste già. Per avviarlo:
+
+```bash
+docker start rabbitmq
+```
+
+Per fermarlo:
+```bash
+docker stop rabbitmq
+```
+
+| Accesso | URL / Porta |
+|---------|-------------|
+| UI di gestione | http://localhost:15672 |
+| Porta AMQP (app) | 5672 |
+| Credenziali default | guest / guest |
+
+### Sequenza di avvio completa (sviluppo locale)
+
+```bash
+# 1. Avvia Seq
+docker compose -f docker-compose.seq.yml up -d
+
+# 2. Avvia RabbitMQ
+docker start rabbitmq
+
+# 3. Avvia l'app
+dotnet run
+```
+
+### Fermare tutto
+
+```bash
+# Ferma Seq
+docker compose -f docker-compose.seq.yml down
+
+# Ferma RabbitMQ
+docker stop rabbitmq
 ```
 
 ---

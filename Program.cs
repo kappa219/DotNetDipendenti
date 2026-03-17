@@ -9,6 +9,7 @@ using System.Text;
 using System.Security.Claims;
 using Scalar.AspNetCore;
 using MassTransit;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,26 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+//logger
+builder.Host.UseSerilog((ctx, configuration) =>
+    configuration.ReadFrom.Configuration(ctx.Configuration).Enrich.FromLogContext()
+    .Enrich.WithProperty("ApplicationName", "CorsoSharpAPI")
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Warning)
+    .MinimumLevel.Override("System", Serilog.Events.LogEventLevel.Warning)
+    .WriteTo.Console()
+    .WriteTo.Seq(ctx.Configuration["Seq:Url"] ?? "http://seq:5341")
+    .WriteTo.MySQL(
+        connectionString: builder.Configuration.GetConnectionString("DefaultConnection")!,
+        tableName: "Logs",
+        restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information
+     )
+);    
+
+
+
 
 
 builder.Services.AddSwaggerGen(options =>

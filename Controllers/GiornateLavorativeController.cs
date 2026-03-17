@@ -38,7 +38,7 @@ public class GiornateLavorativeController : ControllerBase
         _logger.LogInformation("Recupero giornate per dipendente con ID: {DipendenteId} con data da {DataInizio} a {DataFine}", id, dataInizio, dataFine);
         if (dataInizio == null || dataFine == null)
         {
-            _logger.LogInformation("Recupero giornate senza filtro per costruire file EXEL : {DipendenteId}", id);
+           // _logger.LogInformation("Recupero giornate senza filtro per costruire file EXEL : {DipendenteId}", id);
             var giornate = await _giornatelavorative.giornatedipentente(id);
             return Ok(giornate);
         } 
