@@ -1,4 +1,4 @@
-# CorsoSharp API
+# dotnet Dipendenti
 
 API REST con ASP.NET Core 9, JWT Authentication e MySQL per la gestione di dipendenti e giornate lavorative.
 
@@ -15,7 +15,7 @@ Angular
    │
    └──► ApiGateway (YARP)
             │
-            ├──► corsosharp API        /api/auth, /api/users, /api/giornateLavorative, ...
+            ├──► DipendentiAPI        /api/auth, /api/users, /api/giornateLavorative, ...
             │
             └──► ReportService         /api/report/...
                       ▲
@@ -23,7 +23,7 @@ Angular
                  RabbitMQ (coda)
                       ▲
                       │
-               corsosharp API          (pubblica messaggio per report pesanti)
+               DipendentiAPI          (pubblica messaggio per report pesanti)
 ```
 
 ### Componenti da aggiungere
@@ -54,15 +54,6 @@ docker compose up -d
 
 **Swagger UI**: http://localhost:5188/swagger
 **Scalar UI**: http://localhost:5188/scalar/v1
-
----
-
-## Utenti di Test
-
-| Email | Password | Ruolo |
-|-------|----------|-------|
-| admin@admin.it | admin | Admin |
-| user@example.com | user123 | User |
 
 ---
 
@@ -157,7 +148,7 @@ docker compose up -d
 ## Struttura del Progetto
 
 ```
-corsosharp/
+dotnet-dipendenti/
 ├── Controllers/        # AuthController, UsersController, TipologiaLavoroController,
 │                       # AnagrafiaDipendentiController, GiornateLavorativeController
 ├── Services/           # IUserService, UserService, IAuthService, AuthService,
@@ -243,7 +234,6 @@ docker stop rabbitmq
 |---------|-------------|
 | UI di gestione | http://localhost:15672 |
 | Porta AMQP (app) | 5672 |
-| Credenziali default | guest / guest |
 
 ### Sequenza di avvio completa (sviluppo locale)
 
@@ -276,9 +266,8 @@ docker stop rabbitmq
 |-------|--------|
 | Host | localhost |
 | Port | 3307 |
-| Database | corsosharp-docker |
+| Database | dipendenti-docker |
 | User | root |
-| Password | ihfdsojfhsdfh1234 |
 
 > Driver properties: `allowPublicKeyRetrieval=true`, `useSSL=false`
 
@@ -288,9 +277,9 @@ docker stop rabbitmq
 
 ```bash
 # 1. Crea database MySQL
-CREATE DATABASE corsosharp;
+CREATE DATABASE dipendenti;
 
-# 2. Modifica appsettings.json con la tua password
+# 2. Modifica appsettings.json con la tua connessione
 
 # 3. Applica migrations
 dotnet ef database update
