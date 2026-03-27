@@ -15,7 +15,7 @@ public class ReportClientService
         _logger = logger;
     }
 
-    public async Task PubblicaReportDipendenteAsync(List<GiornataLavorativa> giornate, string nomeDipendente, string? userId = null)
+    public async Task PubblicaReportDipendenteAsync(List<GiornataLavorativa> giornate, string nomeDipendente, string? userId = null, string? connectionId = null)
     {
         _logger.LogInformation("Pubblicazione messaggio report dipendente {Nome}", nomeDipendente);
 
@@ -23,6 +23,7 @@ public class ReportClientService
         {
             Tipo = "dipendente",
             UserId = userId,
+            ConnectionId = connectionId,
             NomeDipendente = nomeDipendente,
             Giornate = giornate.Select(g => new GiornataLavorativaDto
             {
@@ -42,7 +43,7 @@ public class ReportClientService
         await _publishEndpoint.Publish(messaggio);
     }
 
-    public async Task PubblicaReportAnnualeAsync(List<GiornataLavorativa> giornate, int anno, string? userId = null)
+    public async Task PubblicaReportAnnualeAsync(List<GiornataLavorativa> giornate, int anno, string? userId = null, string? connectionId = null)
     {
         _logger.LogInformation("Pubblicazione messaggio report annuale {Anno}", anno);
 
@@ -50,6 +51,7 @@ public class ReportClientService
         {
             Tipo = "annuale",
             UserId = userId,
+            ConnectionId = connectionId,
             Anno = anno,
             Giornate = giornate.Select(g => new GiornataLavorativaDto
             {

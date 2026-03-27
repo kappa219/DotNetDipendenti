@@ -37,7 +37,8 @@ public class ReportController : ControllerBase
             return NotFound("Nessuna giornata trovata per questo dipendente");
 
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        await _reportClient.PubblicaReportDipendenteAsync(giornate, nomeDipendente, userId);
+        var connectionId = Request.Headers["X-SignalR-ConnectionId"].FirstOrDefault();
+        await _reportClient.PubblicaReportDipendenteAsync(giornate, nomeDipendente, userId, connectionId);
 
         return Accepted(new { messaggio = "Report in elaborazione, verrà salvato a breve." });
     }
@@ -59,7 +60,8 @@ public class ReportController : ControllerBase
             return NotFound($"Nessuna giornata trovata per l'anno {anno}");
 
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        await _reportClient.PubblicaReportAnnualeAsync(giornateAnno, anno, userId);
+        var connectionId = Request.Headers["X-SignalR-ConnectionId"].FirstOrDefault();
+        await _reportClient.PubblicaReportAnnualeAsync(giornateAnno, anno, userId, connectionId);
 
         return Accepted(new { messaggio = $"Report annuale {anno} in elaborazione, verrà salvato a breve." });
     }

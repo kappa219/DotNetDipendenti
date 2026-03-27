@@ -4,6 +4,7 @@ public class GeneraReportMessage
 {
     public string Tipo { get; set; } = string.Empty; // "dipendente" o "annuale"
     public string? UserId { get; set; }
+    public string? ConnectionId { get; set; }
     public string? NomeDipendente { get; set; }
     public int? Anno { get; set; }
     public List<GiornataLavorativaDto> Giornate { get; set; } = new();
