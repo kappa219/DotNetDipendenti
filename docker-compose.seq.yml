@@ -2,8 +2,8 @@ services:
   seq:
     image: datalust/seq:latest
     ports:
-      - "5341:5341"   # i tuoi servizi mandano i log qui
-      - "8081:80"     # UI → apri localhost:8081
+      - "5341:5341"   #  servizi → Seq
+      - "8081:80"     # apri localhost:8081
     environment:
       ACCEPT_EULA: "Y"
       SEQ_FIRSTRUN_ADMINPASSWORD: "Admin1234!"
