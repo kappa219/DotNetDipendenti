@@ -4,51 +4,18 @@ API REST con ASP.NET Core 9, JWT Authentication e MySQL per la gestione di dipen
 
 ---
 
-## Evoluzione Architetturale — Prossimi Step
-
-Questo progetto verrà esteso con un'architettura a microservizi composta da tre componenti aggiuntivi:
-
-### Architettura Target
-
-```
-Angular
-   │
-   └──► ApiGateway (YARP)
-            │
-            ├──► DipendentiAPI        /api/auth, /api/users, /api/giornateLavorative, ...
-            │
-            └──► ReportService         /api/report/...
-                      ▲
-                      │
-                 RabbitMQ (coda)
-                      ▲
-                      │
-               DipendentiAPI          (pubblica messaggio per report pesanti)
-```
-
-### Componenti da aggiungere
-
-| Componente | Tecnologia | Scopo |
-|------------|-----------|-------|
-| `ApiGateway` | ASP.NET Core 9 + YARP | Punto di ingresso unico, smista le richieste ai servizi |
-| `ReportService` | ASP.NET Core 9 + ClosedXML | Genera file Excel (singolo dipendente o report annuale) |
-| `RabbitMQ` | Docker container | Coda messaggi per la generazione asincrona del report annuale |
-
-### Logica dei Report
-
-| Tipo Report | Approccio | Motivo |
-|-------------|-----------|--------|
-| Excel singolo dipendente | HTTP diretto → ReportService | Leggero, risposta immediata |
-| Excel tutti i dipendenti (annuale) | RabbitMQ → ReportService | Pesante, elaborazione in background |
-
-Il frontend chiama **sempre e solo il Gateway** — non conosce i servizi interni.
-I backend si parlano tra loro direttamente tramite HTTP o RabbitMQ.
-
----
-
 ## Avvio Rapido (Docker)
 
+Prima di avviare l'app assicurati che Seq e RabbitMQ siano attivi:
+
 ```bash
+# 1. Avvia Seq (log)
+docker compose -f docker-compose.seq.yml up -d
+
+# 2. Avvia RabbitMQ
+docker start rabbitmq
+
+# 3. Avvia l'app
 docker compose up -d
 ```
 
@@ -57,7 +24,7 @@ docker compose up -d
 
 ---
 
-## Architettura
+## Architettura e Autenticazione
 
 ```
     Client (Angular/Swagger/Scalar)
@@ -80,6 +47,13 @@ docker compose up -d
               ▼
     Controller → Service → Database
 ```
+
+| Attributo | Significato |
+|-----------|-------------|
+| Nessuno | Accessibile a tutti |
+| `[Authorize]` | Richiede token valido |
+| `[Authorize(Roles="Admin")]` | Richiede token + ruolo Admin |
+| `[Authorize(Roles="Admin,User")]` | Richiede token + ruolo Admin o User |
 
 ---
 
@@ -131,17 +105,6 @@ docker compose up -d
 
 > Il GET `/{id}` senza date restituisce tutte le giornate del dipendente (per export Excel).
 > Con `?dataInizio=&dataFine=` filtra per settimana.
-
----
-
-## Protezione Endpoint
-
-| Attributo | Significato |
-|-----------|-------------|
-| Nessuno | Accessibile a tutti |
-| `[Authorize]` | Richiede token valido |
-| `[Authorize(Roles="Admin")]` | Richiede token + ruolo Admin |
-| `[Authorize(Roles="Admin,User")]` | Richiede token + ruolo Admin o User |
 
 ---
 
@@ -235,19 +198,6 @@ docker stop rabbitmq
 | UI di gestione | http://localhost:15672 |
 | Porta AMQP (app) | 5672 |
 
-### Sequenza di avvio completa (sviluppo locale)
-
-```bash
-# 1. Avvia Seq
-docker compose -f docker-compose.seq.yml up -d
-
-# 2. Avvia RabbitMQ
-docker start rabbitmq
-
-# 3. Avvia l'app
-dotnet run
-```
-
 ### Fermare tutto
 
 ```bash
@@ -287,3 +237,45 @@ dotnet ef database update
 # 4. Avvia
 dotnet run
 ```
+
+---
+
+## Evoluzione Architetturale — Prossimi Step
+
+Questo progetto verrà esteso con un'architettura a microservizi composta da tre componenti aggiuntivi:
+
+### Architettura Target
+
+```
+Angular
+   │
+   └──► ApiGateway (YARP)
+            │
+            ├──► DipendentiAPI        /api/auth, /api/users, /api/giornateLavorative, ...
+            │
+            └──► ReportService         /api/report/...
+                      ▲
+                      │
+                 RabbitMQ (coda)
+                      ▲
+                      │
+               DipendentiAPI          (pubblica messaggio per report pesanti)
+```
+
+### Componenti da aggiungere
+
+| Componente | Tecnologia | Scopo |
+|------------|-----------|-------|
+| `ApiGateway` | ASP.NET Core 9 + YARP | Punto di ingresso unico, smista le richieste ai servizi |
+| `ReportService` | ASP.NET Core 9 + ClosedXML | Genera file Excel (singolo dipendente o report annuale) |
+| `RabbitMQ` | Docker container | Coda messaggi per la generazione asincrona del report annuale |
+
+### Logica dei Report
+
+| Tipo Report | Approccio | Motivo |
+|-------------|-----------|--------|
+| Excel singolo dipendente | HTTP diretto → ReportService | Leggero, risposta immediata |
+| Excel tutti i dipendenti (annuale) | RabbitMQ → ReportService | Pesante, elaborazione in background |
+
+Il frontend chiama **sempre e solo il Gateway** — non conosce i servizi interni.
+I backend si parlano tra loro direttamente tramite HTTP o RabbitMQ.
