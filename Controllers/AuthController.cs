@@ -10,6 +10,7 @@ namespace corsosharp.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
+    //preferenze
     private readonly IAuthService _authService;
 
     public AuthController(IAuthService authService)
