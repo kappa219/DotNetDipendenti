@@ -9,7 +9,7 @@ public class DatabaseConnection
     public DatabaseConnection(string connectionString)
     {
         _connectionString = connectionString;
-    }
+    }//njbjS
 
     public MySqlConnection GetConnection()
     {
