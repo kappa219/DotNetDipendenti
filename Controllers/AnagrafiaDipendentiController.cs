@@ -15,7 +15,7 @@ namespace corsosharp.Controllers;
 public class AnagrafiaDipendentiController : ControllerBase
 
 {
-    pprivate readonly AnagrafiaService _anagrafiaService;
+    private readonly AnagrafiaService _anagrafiaService;
     private readonly DatabaseConnection _dbConnection;
     private readonly IWebHostEnvironment _env;
 
