@@ -7,7 +7,7 @@ using corsosharp.DB;
 namespace corsosharp.Controllers;
 
 [ApiController]  // Equivalente a @RestController in Spring
-[Route("api/[controller]")]  // Route: /api/users (prende il nome del controller)
+[Route("api/[controller]")]  // Route: /api/users (prende il nome del controlle)
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
