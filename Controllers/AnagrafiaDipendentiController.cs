@@ -5,7 +5,7 @@ using corsosharp.Services;
 using Microsoft.AspNetCore.Authorization;
 using corsosharp.DB;
 using MySqlConnector;
-//using System.Data;
+
 
 
 namespace corsosharp.Controllers;
@@ -15,7 +15,7 @@ namespace corsosharp.Controllers;
 public class AnagrafiaDipendentiController : ControllerBase
 
 {
-    private readonly AnagrafiaService _anagrafiaService;
+    pprivate readonly AnagrafiaService _anagrafiaService;
     private readonly DatabaseConnection _dbConnection;
     private readonly IWebHostEnvironment _env;
 
