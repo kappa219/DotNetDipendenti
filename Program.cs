@@ -13,6 +13,13 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException(
+        "Missing configuration: ConnectionStrings:DefaultConnection");
+
+var jwtSecret = builder.Configuration["Jwt:Secret"]
+    ?? throw new InvalidOperationException("Missing configuration: Jwt:Secret");
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -84,7 +91,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!)),
+                Encoding.UTF8.GetBytes(jwtSecret)),
             RoleClaimType = ClaimTypes.Role
         };
     });
@@ -117,11 +124,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<AnagrafiaService>();
 builder.Services.AddScoped<GiornateLavorativeServices>();
 
-// Database
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
 // DatabaseConnection per ADO.NET (MySqlClient)
-builder.Services.AddScoped(_ => new corsosharp.DB.DatabaseConnection(connectionString!));
+builder.Services.AddScoped(_ => new corsosharp.DB.DatabaseConnection(connectionString));
 
          // Entity Framework Core con MySQL mi connetto al database usando EF Core e MySQL, con la stringa di connessione dal file di configurazione
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

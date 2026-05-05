@@ -27,6 +27,7 @@ public class DatabaseConnection
 
         return connection;
     }
+    //
 
     public void CloseConnection(MySqlConnection connection)
     {

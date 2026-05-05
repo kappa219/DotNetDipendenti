@@ -27,6 +27,7 @@ public class AnagrafiaDipendentiController : ControllerBase
     }
 
     // GET /api/anagrafiadipendenti
+    [Authorize(Roles = "Admin,User")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<AnagrafiaDipendente>>> GetAll()
     {

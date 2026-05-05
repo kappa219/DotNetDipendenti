@@ -1,8 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using corsosharp.Models;
+using System.Net.Http.Json;
+using System.Text;
 
 namespace corsosharp.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class GemmaController : ControllerBase
@@ -29,7 +33,12 @@ public class GemmaController : ControllerBase
         payload.Messages.AddRange(dto.Storico);
         payload.Messages.Add(new OllamaMessage { Role = "user", Content = dto.Prompt });
 
-        var response = await client.PostAsJsonAsync(OllamaUrl, payload);
+        using var request = new HttpRequestMessage(HttpMethod.Post, OllamaUrl)
+        {
+            Content = JsonContent.Create(payload)
+        };
+
+        using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -37,9 +46,35 @@ public class GemmaController : ControllerBase
             return StatusCode((int)response.StatusCode, "Errore da Ollama");
         }
 
-        var json = await response.Content.ReadAsStringAsync();
-        var result = System.Text.Json.JsonSerializer.Deserialize<OllamaResponseDto>(json, JsonOptions);
-        var risposta = result?.Message?.Content ?? string.Empty;
+        // Ollama con stream=true restituisce JSON line-delimited (un oggetto JSON per riga).
+        // Accumuliamo i chunk di testo per ottenere una risposta completa.
+        var rispostaBuilder = new StringBuilder();
+        await using var stream = await response.Content.ReadAsStreamAsync();
+        using var reader = new StreamReader(stream);
+
+        while (!reader.EndOfStream)
+        {
+            var line = await reader.ReadLineAsync();
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
+
+            try
+            {
+                var chunk = System.Text.Json.JsonSerializer.Deserialize<OllamaResponseDto>(line, JsonOptions);
+                if (!string.IsNullOrEmpty(chunk?.Message?.Content))
+                {
+                    rispostaBuilder.Append(chunk.Message.Content);
+                }
+            }
+            catch (System.Text.Json.JsonException ex)
+            {
+                _logger.LogWarning(ex, "Chunk JSON non valido da Ollama: {Chunk}", line);
+            }
+        }
+
+        var risposta = rispostaBuilder.ToString();
         return Ok(new { risposta });
     }
 }

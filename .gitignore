@@ -6,6 +6,7 @@ obj/
 *.user
 *.userosscache
 *.suo
+.codex
 
 # VS Code
 .vscode/
@@ -18,8 +19,8 @@ obj/
 *.env
 
 # Logs
+.log
 *.log
-
 # OS files
 .DS_Store
 Thumbs.db
