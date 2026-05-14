@@ -21,6 +21,8 @@ namespace corsosharp.Data
 
         public DbSet<GiornataLavorativa> GiornateLavorative { get; set; }
 
+        public DbSet<Utente> UtentiEs { get; set; }
+
         // Aggiungi altri DbSet quando crei i model:
         // public DbSet<Product> Products { get; set; }
         // public DbSet<Order> Orders { get; set; }

@@ -154,6 +154,11 @@ namespace corsosharp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("Adress")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("adress");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("created_at");
@@ -162,6 +167,10 @@ namespace corsosharp.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("is_active");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -186,6 +195,40 @@ namespace corsosharp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("users");
+                });
+
+            modelBuilder.Entity("corsosharp.Models.Utente", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Cognome")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Eta")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Indirizzo")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UtentiEs");
                 });
 
             modelBuilder.Entity("corsosharp.Models.AnagrafiaDipendente", b =>

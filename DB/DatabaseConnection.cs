@@ -14,6 +14,7 @@ public class DatabaseConnection
     public MySqlConnection GetConnection()
     {
         MySqlConnection connection = null;
+
         try
         {
             connection = new MySqlConnection(_connectionString);
@@ -24,7 +25,6 @@ public class DatabaseConnection
         {
             Console.WriteLine("Errore di connessione: " + ex.Message);
         }
-
         return connection;
     }
     //

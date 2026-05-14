@@ -27,6 +27,12 @@ public class Users
     [Column("Role")]
     public string Role { get; set; } = string.Empty;
 
+    [Column("is_active")]
+    public bool IsActive { get; set; } = true;
+
+    [Column("adress")]
+    public String Adress { get; set; } = string.Empty;
+
     [Column("created_at")] 
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 

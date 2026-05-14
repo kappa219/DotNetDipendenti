@@ -21,7 +21,7 @@ public class UsersController : ControllerBase
     }
 
     // GET /api/users
-    // Equivalente a @GetMapping
+    // Equivalente a    @GetMapping
     [HttpGet]
     public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetAll()
     {

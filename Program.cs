@@ -10,12 +10,22 @@ using System.Security.Claims;
 using Scalar.AspNetCore;
 using MassTransit;
 using Serilog;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException(
         "Missing configuration: ConnectionStrings:DefaultConnection");
+
+// If the dev connection string still contains the placeholder password, avoid hard-crashing at startup.
+// You can override via env var: ConnectionStrings__DefaultConnection
+var databaseEnabled = !connectionString.Contains("tua_password", StringComparison.OrdinalIgnoreCase);
+if (!databaseEnabled)
+{
+    Console.WriteLine("WARNING: MySQL is disabled because ConnectionStrings:DefaultConnection contains the placeholder password 'tua_password'.");
+    Console.WriteLine("Set a real password in appsettings.Development.json or override via env var ConnectionStrings__DefaultConnection.");
+}
 
 var jwtSecret = builder.Configuration["Jwt:Secret"]
     ?? throw new InvalidOperationException("Missing configuration: Jwt:Secret");
@@ -36,11 +46,14 @@ builder.Host.UseSerilog((ctx, configuration) =>
     .MinimumLevel.Override("System", Serilog.Events.LogEventLevel.Warning)
     .WriteTo.Console()
     .WriteTo.Seq(ctx.Configuration["Seq:Url"] ?? "http://seq:5341")
-    .WriteTo.MySQL(
-        connectionString: builder.Configuration.GetConnectionString("DefaultConnection")!,
-        tableName: "Logs",
-        restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information
-     )
+    .WriteTo.Conditional(
+        _ => databaseEnabled && ctx.Configuration.GetValue("Serilog:UseMySqlSink", false),
+        wt => wt.MySQL(
+            connectionString: ctx.Configuration.GetConnectionString("DefaultConnection")!,
+            tableName: "Logs",
+            restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information
+        )
+    )
 );    
 
 
@@ -116,7 +129,6 @@ builder.Services.AddCors(options =>
 });
 
 // Registra i Service per Dependency Injection
-// AddScoped = una istanza per ogni richiesta HTTP (come @Scope("request") in Spring)
 // Altre opzioni:
 // - AddSingleton = una sola istanza per tutta l'app
 // - AddTransient = nuova istanza ogni volta che viene richiesta
@@ -127,37 +139,66 @@ builder.Services.AddScoped<GiornateLavorativeServices>();
 // DatabaseConnection per ADO.NET (MySqlClient)
 builder.Services.AddScoped(_ => new corsosharp.DB.DatabaseConnection(connectionString));
 
-         // Entity Framework Core con MySQL mi connetto al database usando EF Core e MySQL, con la stringa di connessione dal file di configurazione
+	         // Entity Framework Core con MySQL mi connetto al database usando EF Core e MySQL, con la stringa di connessione dal file di configurazione
+var serverVersionText = builder.Configuration["MySql:ServerVersion"] ?? "8.0.36";
+if (!Version.TryParse(serverVersionText, out var serverVersion))
+{
+    throw new InvalidOperationException(
+        $"Invalid configuration: MySql:ServerVersion='{serverVersionText}'. Expected something like '8.0.36'.");
+}
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionString, new MySqlServerVersion(serverVersion)));
 
 
     builder.Services.AddScoped<IAuthService, AuthService>();
 
 // MassTransit con RabbitMQ per messaggistica asincrona
-builder.Services.AddMassTransit(x =>
+if (builder.Configuration.GetValue("RabbitMq:Enabled", true))
 {
-    x.UsingRabbitMq((ctx, cfg) =>
+    builder.Services.AddMassTransit(x =>
     {
-        cfg.Host("localhost", "/", h =>
+        x.UsingRabbitMq((ctx, cfg) =>
         {
-            h.Username("guest");
-            h.Password("guest");
+            cfg.Host(
+                host: builder.Configuration["RabbitMq:Host"] ?? "localhost",
+                virtualHost: builder.Configuration["RabbitMq:VirtualHost"] ?? "/",
+                h =>
+                {
+                    h.Username(builder.Configuration["RabbitMq:Username"] ?? "guest");
+                    h.Password(builder.Configuration["RabbitMq:Password"] ?? "guest");
+                });
         });
     });
-});
+}
+else
+{
+    // Dev-friendly fallback: keeps IPublishEndpoint available without requiring RabbitMQ.
+    builder.Services.AddMassTransit(x =>
+    {
+        x.UsingInMemory((ctx, cfg) => { });
+    });
+}
 
 builder.Services.AddScoped<ReportClientService>();
 
 var app = builder.Build();
-using (var scope = app.Services.CreateScope())
+if (databaseEnabled && app.Configuration.GetValue("Database:EnsureCreated", app.Environment.IsDevelopment()))
 {
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.EnsureCreated();
+    try
+    {
+        using var scope = app.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        db.Database.EnsureCreated();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, "Database initialization failed (EnsureCreated). The API will still start, but DB-backed endpoints may fail.");
+    }
 }
 
 
-// Serve i file statici (immagini, ecc.) dalla cartella wwwroot
+// Serve i file statici (immagini, etc.) dalla cartella wwwroot
 app.UseStaticFiles();
 
 // Abilita CORS (deve essere prima di MapControllers)

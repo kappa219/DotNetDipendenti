@@ -6,20 +6,21 @@ using System.Text;
 
 namespace corsosharp.Controllers;
 
-[Authorize]
+// [Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class GemmaController : ControllerBase
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<GemmaController> _logger;
-    private const string OllamaUrl = "http://localhost:11434/api/chat";
+    private readonly IConfiguration _configuration;
     private static readonly System.Text.Json.JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
-    public GemmaController(IHttpClientFactory httpClientFactory, ILogger<GemmaController> logger)
+    public GemmaController(IHttpClientFactory httpClientFactory, ILogger<GemmaController> logger, IConfiguration configuration)
     {
         _httpClientFactory = httpClientFactory;
         _logger = logger;
+        _configuration = configuration;
     }
 
     [HttpPost]
@@ -28,17 +29,44 @@ public class GemmaController : ControllerBase
         _logger.LogInformation("Richiesta a Gemma2: {Prompt}", dto.Prompt);
 
         var client = _httpClientFactory.CreateClient();
+        var ollamaUrl = _configuration["Ollama:ChatUrl"] ?? "http://localhost:11434/api/chat";
 
         var payload = new OllamaChatRequest();
         payload.Messages.AddRange(dto.Storico);
         payload.Messages.Add(new OllamaMessage { Role = "user", Content = dto.Prompt });
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, OllamaUrl)
+        using var request = new HttpRequestMessage(HttpMethod.Post, ollamaUrl)
         {
             Content = JsonContent.Create(payload)
         };
 
-        using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+        HttpResponseMessage response;
+        try
+        {
+            response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Ollama non raggiungibile su {OllamaUrl}", ollamaUrl);
+            return StatusCode(
+                StatusCodes.Status503ServiceUnavailable,
+                new
+                {
+                    errore = "Ollama non raggiungibile. Assicurati che il server Ollama sia avviato (default: localhost:11434).",
+                    ollamaUrl
+                });
+        }
+        catch (TaskCanceledException ex)
+        {
+            _logger.LogError(ex, "Timeout chiamando Ollama su {OllamaUrl}", ollamaUrl);
+            return StatusCode(
+                StatusCodes.Status504GatewayTimeout,
+                new
+                {
+                    errore = "Timeout nella chiamata a Ollama.",
+                    ollamaUrl
+                });
+        }
 
         if (!response.IsSuccessStatusCode)
         {

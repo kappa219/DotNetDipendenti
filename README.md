@@ -108,6 +108,51 @@ docker compose up -d
 
 ---
 
+## AI (Ollama / Gemma)
+
+Questo progetto espone un endpoint che inoltra la richiesta a **Ollama** (server locale LLM).
+
+### Endpoint
+
+- `POST /api/Gemma` → inoltra a `http://localhost:11434/api/chat` (vedi `Controllers/GemmaController.cs`)
+- Modello di default: `gemma2:2b` (vedi `Models/GemmaModels.cs`)
+
+### Installazione e avvio (Ubuntu / Snap)
+
+```bash
+# installa Ollama
+sudo snap install ollama
+
+# avvia manualmente (non parte all'avvio del PC)
+sudo systemctl start snap.ollama.listener.service
+
+# verifica che risponda sulla porta 11434
+curl http://localhost:11434/api/tags
+```
+
+Per fermarlo:
+
+```bash
+sudo systemctl stop snap.ollama.listener.service
+```
+
+Se in passato lo avevi abilitato all'avvio e vuoi disabilitarlo:
+
+```bash
+sudo systemctl disable snap.ollama.listener.service
+```
+
+### Scaricare il modello (una sola volta)
+
+```bash
+ollama pull gemma2:2b
+
+# test rapido (apre una sessione interattiva)
+ollama run gemma2:2b
+```
+
+> Nota: il servizio Ollama deve essere in esecuzione, ma il modello non va riscaricato ogni volta (resta in cache).
+
 ## Struttura del Progetto
 
 ```
@@ -207,6 +252,37 @@ docker compose -f docker-compose.seq.yml down
 # Ferma RabbitMQ (porta 5672 AMQP, porta 15672 UI)
 docker stop rabbitmq
 ```
+
+---
+
+## SignalR (Qrabbit) — notifiche realtime per i report
+
+Quando il frontend attiva la generazione di un report, può ricevere **notifiche realtime** (es. “report pronto”, “errore”) tramite **SignalR** usando **Qrabbit** (servizio separato che fa da ponte *RabbitMQ → SignalR*).
+
+### 1) Abilitare RabbitMQ nell’API
+
+In questa API l’invio dei messaggi su coda è controllato da `RabbitMq:Enabled` (vedi `Program.cs`).
+
+- In `appsettings.Development.json` (o in quello dell’ambiente che usi) imposta:
+  - `RabbitMq:Enabled: true`
+- In alternativa via environment variables:
+  - `RabbitMq__Enabled=true`
+
+> Se `RabbitMq:Enabled` è `false` l’app usa un bus in-memory (comodo in sviluppo), quindi **Qrabbit non riceve nulla**.
+
+### 2) Avviare i componenti
+
+- Avvia RabbitMQ
+- Avvia questa API
+- Avvia **Qrabbit** puntandolo allo **stesso RabbitMQ** (Host/VirtualHost/Username/Password coerenti con `RabbitMq:*`)
+
+### 3) Passare il `ConnectionId` dal frontend all’API
+
+Per permettere a Qrabbit di notificare **solo** il client corretto, l’API accetta l’header:
+
+- `X-SignalR-ConnectionId: <connectionId>`
+
+Gli endpoint di report lo leggono e lo inseriscono nel messaggio pubblicato su coda (vedi `Controllers/ReportController.cs` e `Services/ReportClientService.cs`).
 
 ---
 

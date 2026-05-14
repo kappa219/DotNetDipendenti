@@ -5,25 +5,25 @@
 namespace corsosharp.Migrations
 {
     /// <inheritdoc />
-    public partial class aggiuntocampoora : Migration
+    public partial class SyncModelAfterStubs : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "Ora",
-                table: "giornate_lavorative",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
+            migrationBuilder.AddColumn<string>(
+                name: "Eta",
+                table: "UtentiEs",
+                type: "longtext",
+                nullable: false)
+                .Annotation("MySql:CharSet", "utf8mb4");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Ora",
-                table: "giornate_lavorative");
+                name: "Eta",
+                table: "UtentiEs");
         }
     }
 }
