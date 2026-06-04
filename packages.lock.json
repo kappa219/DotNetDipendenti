@@ -36,6 +36,18 @@
           "Microsoft.OpenApi": "1.6.17"
         }
       },
+      "Microsoft.EntityFrameworkCore": {
+        "type": "Direct",
+        "requested": "[9.0.0, )",
+        "resolved": "9.0.0",
+        "contentHash": "wpG+nfnfDAw87R3ovAsUmjr3MZ4tYXf6bFqEPVAIKE6IfPml3DS//iX0DBnf8kWn5ZHSO5oi1m4d/Jf+1LifJQ==",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore.Abstractions": "9.0.0",
+          "Microsoft.EntityFrameworkCore.Analyzers": "9.0.0",
+          "Microsoft.Extensions.Caching.Memory": "9.0.0",
+          "Microsoft.Extensions.Logging": "9.0.0"
+        }
+      },
       "Microsoft.EntityFrameworkCore.Design": {
         "type": "Direct",
         "requested": "[9.0.0, )",
@@ -291,17 +303,6 @@
         "type": "Transitive",
         "resolved": "4.7.0",
         "contentHash": "pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA=="
-      },
-      "Microsoft.EntityFrameworkCore": {
-        "type": "Transitive",
-        "resolved": "9.0.0",
-        "contentHash": "wpG+nfnfDAw87R3ovAsUmjr3MZ4tYXf6bFqEPVAIKE6IfPml3DS//iX0DBnf8kWn5ZHSO5oi1m4d/Jf+1LifJQ==",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Abstractions": "9.0.0",
-          "Microsoft.EntityFrameworkCore.Analyzers": "9.0.0",
-          "Microsoft.Extensions.Caching.Memory": "9.0.0",
-          "Microsoft.Extensions.Logging": "9.0.0"
-        }
       },
       "Microsoft.EntityFrameworkCore.Abstractions": {
         "type": "Transitive",

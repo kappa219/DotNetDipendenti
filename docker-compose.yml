@@ -10,7 +10,7 @@ services:
       - mysql_data:/var/lib/mysql
       - ./docker/init:/docker-entrypoint-initdb.d
     ports:
-      - "3307:3306"  # 3307 esterno -> 3306 interno (evita conflitto con MySQL locale)
+      - "3310:3306"  # 3307 esterno -> 3306 interno (evita conflitto con MySQL locale)
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s

@@ -119,6 +119,20 @@ public class UserService : IUserService
         return MapToDto(user);
     }
 
+
+   public async Task<bool> SalvaFoto(Guid id, string percorso)
+    {
+        var dipendente = await _context.AnagrafiaDipendente.FindAsync(id);
+        if (dipendente == null)
+            return false;
+
+        dipendente.FotoPercorso = percorso;
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+
+
     // Helper per mappare Entity -> DTO
     private static UserResponseDto MapToDto(Users user)
     {

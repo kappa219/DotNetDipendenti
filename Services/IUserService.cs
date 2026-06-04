@@ -28,4 +28,7 @@ public interface IUserService
 
     // Cerca utente per email
     Task<UserResponseDto?> GetByEmailAsync(string email);
+
+    // Salva il percorso della foto per un utente/dipendente
+    Task<bool> SalvaFoto(Guid id, string percorso);
 }

@@ -56,7 +56,7 @@ _logger.LogInformation("Recupero di tutti i dipendenti in corso...");
         return dipendente;
     }
 
-    public async Task<AnagrafiaDipendente?> Update(Guid id, AnagrafiaDipendente datiAggiornati)
+    public async Task<AnagrafiaDipendente?> Update(Guid id, UpdateAnagrafiaDipendenteDto datiAggiornati)
     {
         var existing = await _context.AnagrafiaDipendente.FindAsync(id);
         if (existing == null)
@@ -110,9 +110,6 @@ _logger.LogInformation("Recupero di tutti i dipendenti in corso...");
         _logger.LogDebug("Dipendente eliminato: {DipendenteId}", id);
         return true;
     }
-
-
-
 
 
 

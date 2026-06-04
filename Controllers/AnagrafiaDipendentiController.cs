@@ -72,18 +72,10 @@ public class AnagrafiaDipendentiController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<AnagrafiaDipendente>> Update(Guid id, [FromBody] UpdateAnagrafiaDipendenteDto dto)
     {
-        var datiAggiornati = new AnagrafiaDipendente
-        {
-            Nome = dto.Nome,
-            Cognome = dto.Cognome,
-            Eta = dto.Eta,
-            DataAssunzione = dto.DataAssunzione,
-            DataDimissione = dto.DataDimissione,
-            Stipendio = dto.Stipendio,
-            TipologiaLavoroId = dto.TipologiaLavoroId
-        };
+        
+    
 
-        var aggiornato = await _anagrafiaService.Update(id, datiAggiornati);
+        var aggiornato = await _anagrafiaService.Update(id, dto);
         if (aggiornato == null)
             return NotFound();
 
@@ -91,7 +83,9 @@ public class AnagrafiaDipendentiController : ControllerBase
     }
 
     // POST /api/anagrafiadipendenti/{id}/foto
+    // POST /api/anagrafiadipendenti/{id}/upload-foto
     [HttpPost("{id:guid}/foto")]
+    [HttpPost("{id:guid}/upload-foto")]
     //[Authorize(Roles = "Admin")]
     public async Task<IActionResult> UploadFoto(Guid id, IFormFile foto)
     {

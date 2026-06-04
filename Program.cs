@@ -23,8 +23,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 var databaseEnabled = !connectionString.Contains("tua_password", StringComparison.OrdinalIgnoreCase);
 if (!databaseEnabled)
 {
-    Console.WriteLine("WARNING: MySQL is disabled because ConnectionStrings:DefaultConnection contains the placeholder password 'tua_password'.");
-    Console.WriteLine("Set a real password in appsettings.Development.json or override via env var ConnectionStrings__DefaultConnection.");
+    Console.WriteLine("WARNING: MySQL is disabled because ConnectionStrings:DefaultConnection");
+    Console.WriteLine("no work");
 }
 
 var jwtSecret = builder.Configuration["Jwt:Secret"]
@@ -189,11 +189,11 @@ if (databaseEnabled && app.Configuration.GetValue("Database:EnsureCreated", app.
     {
         using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        db.Database.EnsureCreated();
+        db.Database.Migrate();
     }
     catch (Exception ex)
     {
-        app.Logger.LogWarning(ex, "Database initialization failed (EnsureCreated). The API will still start, but DB-backed endpoints may fail.");
+        app.Logger.LogWarning(ex, "Database initialization failed (Migrate). The API will still start, but DB-backed endpoints may fail.");
     }
 }
 

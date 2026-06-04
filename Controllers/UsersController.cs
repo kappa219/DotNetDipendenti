@@ -97,6 +97,33 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
+[HttpPost("{id}/upload-foto")]
+public async Task<IActionResult> UploadFotoDto(Guid id, [FromForm] UploadFotoDto dto)
+    {
+
+          if (dto.File == null || dto.File.Length == 0)
+        return BadRequest("File non valido");
+
+    var fileName = $"{Guid.NewGuid()}_{dto.File.FileName}";
+    var path = Path.Combine("Uploads", fileName);
+
+    using (var stream = new FileStream(path, FileMode.Create))
+    {
+        await dto.File.CopyToAsync(stream);
+    }
+
+    var result = await _userService.SalvaFoto(id, path);
+
+    if (!result)
+        return NotFound();
+
+    return Ok(new { path });
+        
+
+    }
+
+
+
 
     [HttpGet("search")]
     public async Task<ActionResult<IEnumerable<UserResponseDto>>> Search([FromQuery] string? name = null, [FromQuery] string? email = null)
